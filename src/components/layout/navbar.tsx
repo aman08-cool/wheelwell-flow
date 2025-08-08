@@ -1,11 +1,13 @@
-import { Car, User, Calendar, Settings } from "lucide-react"
+import { Car, User, Calendar, LogOut } from "lucide-react"
 import { Link, useLocation } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { useAuth } from "@/components/auth/auth-provider"
 
 export function Navbar() {
   const location = useLocation()
   const currentPath = location.pathname
+  const { user, logout } = useAuth()
 
   const isActive = (path: string) => currentPath === path
 
@@ -70,6 +72,10 @@ export function Navbar() {
                 <Calendar className="h-4 w-4 mr-2" />
                 Book Service
               </Link>
+            </Button>
+            <Button variant="ghost" size="sm" onClick={logout}>
+              <LogOut className="h-4 w-4" />
+              <span className="sr-only">Logout</span>
             </Button>
           </nav>
         </div>
