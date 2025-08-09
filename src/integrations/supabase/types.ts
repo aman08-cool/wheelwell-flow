@@ -20,6 +20,8 @@ export type Database = {
           created_at: string
           display_name: string | null
           id: string
+          phone: string | null
+          preferences: Json
           role: string | null
           updated_at: string
           user_id: string
@@ -29,6 +31,8 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          phone?: string | null
+          preferences?: Json
           role?: string | null
           updated_at?: string
           user_id: string
@@ -38,9 +42,50 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          phone?: string | null
+          preferences?: Json
           role?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      vehicles: {
+        Row: {
+          color: string | null
+          created_at: string
+          id: string
+          license_plate: string | null
+          make: string
+          model: string
+          updated_at: string
+          user_id: string
+          vin: string | null
+          year: number | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          license_plate?: string | null
+          make: string
+          model: string
+          updated_at?: string
+          user_id: string
+          vin?: string | null
+          year?: number | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          license_plate?: string | null
+          make?: string
+          model?: string
+          updated_at?: string
+          user_id?: string
+          vin?: string | null
+          year?: number | null
         }
         Relationships: []
       }
