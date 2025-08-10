@@ -44,14 +44,6 @@ export function Navbar() {
             >
               My Bookings
             </Link>
-            <Link
-              to="/vehicles"
-              className={`transition-colors hover:text-foreground/80 ${
-                isActive("/vehicles") ? "text-foreground" : "text-foreground/60"
-              }`}
-            >
-              My Vehicles
-            </Link>
           </nav>
         </div>
         

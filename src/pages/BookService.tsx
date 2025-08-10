@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useSearchParams } from "react-router-dom"
+import { useSearchParams, useNavigate } from "react-router-dom"
 import { Calendar, Clock, MapPin, Car, User, Phone, Mail, CreditCard } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/hooks/use-toast"
-
+import { supabase } from "@/integrations/supabase/client"
 const services = [
   { id: 1, name: "Basic Oil Change", price: 49.99, duration: "30 mins" },
   { id: 2, name: "Premium Oil Change", price: 79.99, duration: "45 mins" },
@@ -28,6 +28,7 @@ export default function BookService() {
   const [searchParams] = useSearchParams()
   const { toast } = useToast()
   const preselectedService = searchParams.get("service")
+  const navigate = useNavigate()
   
   const [formData, setFormData] = useState({
     // Service Details
@@ -67,7 +68,7 @@ export default function BookService() {
   const totalPrice = (selectedService?.price || 0) + 
     additionalServicesList.reduce((sum, service) => sum + service.price, 0)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
     // Basic validation
@@ -80,13 +81,65 @@ export default function BookService() {
       return
     }
 
-    // Simulate booking submission
+    const { data: userData } = await supabase.auth.getUser()
+    const user = userData?.user
+
+    if (!user) {
+      toast({
+        title: "Not authenticated",
+        description: "Please log in to confirm your booking.",
+        variant: "destructive"
+      })
+      return
+    }
+
+    const serviceName = selectedService?.name || "Service"
+    const additionalServiceNames = additionalServicesList.map((s) => s.name)
+
+    const locationLabel =
+      formData.serviceLocation === "downtown"
+        ? "Downtown Service Center"
+        : formData.serviceLocation === "north"
+        ? "North Branch"
+        : formData.serviceLocation === "south"
+        ? "South Branch"
+        : formData.serviceLocation === "mobile"
+        ? (formData.address ? `Mobile Service (${formData.address})` : "Mobile Service")
+        : ""
+
+    const { error } = await supabase.from("bookings").insert({
+      user_id: user.id,
+      service_name: serviceName,
+      additional_services: additionalServiceNames,
+      price: totalPrice,
+      location: locationLabel,
+      status: "confirmed",
+      scheduled_date: formData.preferredDate,
+      scheduled_time: formData.preferredTime,
+      vehicle_make: formData.vehicleMake || null,
+      vehicle_model: formData.vehicleModel || null,
+      vehicle_year: formData.vehicleYear ? parseInt(formData.vehicleYear, 10) : null,
+      license_plate: formData.licensePlate || null,
+      vin: null,
+      notes: formData.specialInstructions || null,
+    })
+
+    if (error) {
+      console.error("Error creating booking", error)
+      toast({
+        title: "Booking failed",
+        description: "We couldn't create your booking. Please try again.",
+        variant: "destructive",
+      })
+      return
+    }
+
     toast({
       title: "Booking Confirmed!",
       description: `Your service has been scheduled for ${formData.preferredDate} at ${formData.preferredTime}`,
     })
 
-    console.log("Booking submitted:", formData)
+    navigate("/bookings")
   }
 
   const toggleAdditionalService = (serviceId: string) => {

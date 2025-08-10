@@ -47,7 +47,7 @@ function AppRoutes() {
         <Route path="/book" element={<BookService />} />
         <Route path="/bookings" element={<Bookings />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/vehicles" element={<Profile />} />
+        
         <Route path="/login" element={<Navigate to="/" replace />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

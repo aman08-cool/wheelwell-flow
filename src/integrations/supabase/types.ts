@@ -14,6 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
+      bookings: {
+        Row: {
+          additional_services: string[]
+          created_at: string
+          id: string
+          license_plate: string | null
+          location: string | null
+          notes: string | null
+          price: number
+          scheduled_date: string
+          scheduled_time: string
+          service_name: string
+          status: string
+          updated_at: string
+          user_id: string
+          vehicle_make: string | null
+          vehicle_model: string | null
+          vehicle_year: number | null
+          vin: string | null
+        }
+        Insert: {
+          additional_services?: string[]
+          created_at?: string
+          id?: string
+          license_plate?: string | null
+          location?: string | null
+          notes?: string | null
+          price?: number
+          scheduled_date: string
+          scheduled_time: string
+          service_name: string
+          status?: string
+          updated_at?: string
+          user_id: string
+          vehicle_make?: string | null
+          vehicle_model?: string | null
+          vehicle_year?: number | null
+          vin?: string | null
+        }
+        Update: {
+          additional_services?: string[]
+          created_at?: string
+          id?: string
+          license_plate?: string | null
+          location?: string | null
+          notes?: string | null
+          price?: number
+          scheduled_date?: string
+          scheduled_time?: string
+          service_name?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+          vehicle_make?: string | null
+          vehicle_model?: string | null
+          vehicle_year?: number | null
+          vin?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
