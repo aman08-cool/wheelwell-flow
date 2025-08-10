@@ -14,6 +14,7 @@ import BookService from "./pages/BookService";
 import Bookings from "./pages/Bookings";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
+import ChatAssistant from "@/components/assistant/ChatAssistant";
 
 const queryClient = new QueryClient();
 
@@ -27,14 +28,16 @@ function AppRoutes() {
       </div>
     );
   }
-
   if (!user) {
     return (
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<LoginForm />} />
-        <Route path="*" element={<Landing />} />
-      </Routes>
+      <>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<LoginForm />} />
+          <Route path="*" element={<Landing />} />
+        </Routes>
+        <ChatAssistant />
+      </>
     );
   }
 
@@ -51,6 +54,7 @@ function AppRoutes() {
         <Route path="/login" element={<Navigate to="/" replace />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <ChatAssistant />
     </>
   );
 }

@@ -1,1 +1,4 @@
 project_id = "rqhmimdhtrgdgniofnwh"
+
+[functions.chat-booking]
+verify_jwt = false
