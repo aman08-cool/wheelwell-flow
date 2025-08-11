@@ -99,7 +99,7 @@ export default function ChatAssistant() {
         user_id: user.id,
         service_name,
         additional_services: [],
-        price: null,
+        price: 0,
         location: location || null,
         status: "confirmed",
         scheduled_date: preferred_date,
