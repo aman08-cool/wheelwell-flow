@@ -115,9 +115,27 @@ serve(async (req) => {
       parsed = { reply: content || "Sorry, I couldn't parse that.", intent: { action: "none" } } as ChatResponse;
     }
 
-    // Basic shape safety
+    // Basic shape safety and guardrails for incomplete proposals
     if (!parsed.reply) parsed.reply = "";
-    if (!parsed.intent) parsed.intent = { action: "none" };
+    if (!parsed.intent) parsed.intent = { action: "none" } as BookingIntent;
+
+    if (parsed.intent?.action === "propose_booking") {
+      const missing: string[] = [];
+      if (!parsed.intent.service_name) missing.push("service");
+      if (!parsed.intent.preferred_date) missing.push("date");
+      if (!parsed.intent.preferred_time) missing.push("time");
+
+      if (missing.length > 0) {
+        parsed.intent.action = "none";
+        const need = missing.join(", ");
+        const ask = missing.length === 1
+          ? `I still need the ${need}. What works for you?`
+          : `I still need the following details: ${need}. Could you provide them?`;
+        parsed.reply = parsed.reply
+          ? `${parsed.reply}\n\n${ask}`
+          : ask;
+      }
+    }
 
     return new Response(JSON.stringify(parsed), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

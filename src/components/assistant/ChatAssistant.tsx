@@ -166,7 +166,7 @@ export default function ChatAssistant() {
                     )}
                     {proposed.location && <div><span className="font-medium">Location:</span> {proposed.location}</div>}
                     <div className="flex gap-2 pt-2">
-                      <Button size="sm" onClick={confirmBooking}>
+                      <Button size="sm" onClick={confirmBooking} disabled={!((proposed?.service_name) && (proposed?.preferred_date) && (proposed?.preferred_time))}>
                         <CheckCircle2 className="mr-2 h-4 w-4" /> Confirm
                       </Button>
                       <Button size="sm" variant="outline" onClick={() => setProposed(null)}>Edit</Button>
