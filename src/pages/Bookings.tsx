@@ -6,6 +6,8 @@ import { StatusBadge } from "@/components/ui/status-badge"
 import { supabase } from "@/integrations/supabase/client"
 import { useEffect, useState } from "react"
 import { useToast } from "@/hooks/use-toast"
+import { Input } from "@/components/ui/input"
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 type Booking = {
   id: string
   service_name: string
@@ -22,6 +24,11 @@ type Booking = {
 export default function Bookings() {
   const [bookings, setBookings] = useState<Booking[]>([])
   const [loading, setLoading] = useState(true)
+  const [rescheduleOpen, setRescheduleOpen] = useState(false)
+  const [activeId, setActiveId] = useState<string | null>(null)
+  const [newDate, setNewDate] = useState<string>("")
+  const [newTime, setNewTime] = useState<string>("")
+  const formatINR = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' })
 
   useEffect(() => {
     const load = async () => {
@@ -62,6 +69,33 @@ export default function Bookings() {
     }
   }
 
+  const openReschedule = (b: Booking) => {
+    setActiveId(b.id)
+    setNewDate(b.scheduled_date)
+    setNewTime(b.scheduled_time)
+    setRescheduleOpen(true)
+  }
+
+  const handleRescheduleSave = async () => {
+    if (!activeId || !newDate || !newTime) {
+      toast({ title: 'Missing details', description: 'Please pick a date and time.', variant: 'destructive' })
+      return
+    }
+    const { error } = await supabase
+      .from('bookings')
+      .update({ scheduled_date: newDate, scheduled_time: newTime })
+      .eq('id', activeId)
+    if (error) {
+      console.error('Reschedule error', error)
+      toast({ title: 'Failed to reschedule', description: error.message, variant: 'destructive' })
+    } else {
+      setBookings((prev) => prev.map((b) => b.id === activeId ? { ...b, scheduled_date: newDate, scheduled_time: newTime } : b))
+      toast({ title: 'Rescheduled', description: 'Your booking was updated.' })
+      setRescheduleOpen(false)
+      setActiveId(null)
+    }
+  }
+
   return (
     <div className="container py-8">
       <h1 className="text-3xl font-bold mb-8">My Bookings</h1>
@@ -98,9 +132,9 @@ export default function Bookings() {
                   </div>
                 </div>
                 <div className="flex items-center justify-between mt-4">
-                  <div className="text-lg font-bold text-primary">${price.toFixed(2)}</div>
+                  <div className="text-lg font-bold text-primary">{formatINR.format(price)}</div>
                   <div className="space-x-2">
-                    <Button variant="outline" size="sm">Reschedule</Button>
+                    <Button variant="outline" size="sm" onClick={() => openReschedule(booking)}>Reschedule</Button>
                     <Button variant="destructive" size="sm" onClick={() => handleCancel(booking.id)}>Cancel</Button>
                   </div>
                 </div>
@@ -109,6 +143,29 @@ export default function Bookings() {
           )
         })}
       </div>
+
+      <Dialog open={rescheduleOpen} onOpenChange={setRescheduleOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Reschedule booking</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4">
+            <div className="space-y-2">
+              <div className="text-sm text-muted-foreground">New date</div>
+              <Input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <div className="text-sm text-muted-foreground">New time</div>
+              <Input type="time" value={newTime} onChange={(e) => setNewTime(e.target.value)} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRescheduleOpen(false)}>Close</Button>
+            <Button onClick={handleRescheduleSave}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
+
