@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { StatusBadge } from "@/components/ui/status-badge"
 import { supabase } from "@/integrations/supabase/client"
 import { useEffect, useState } from "react"
-
+import { useToast } from "@/hooks/use-toast"
 type Booking = {
   id: string
   service_name: string
@@ -48,6 +48,20 @@ export default function Bookings() {
     load()
   }, [])
 
+  const { toast } = useToast()
+  const handleCancel = async (id: string) => {
+    const snapshot = [...bookings]
+    setBookings((prev) => prev.filter((b) => b.id !== id))
+    const { error } = await supabase.from('bookings').delete().eq('id', id)
+    if (error) {
+      console.error('Cancel booking error', error)
+      setBookings(snapshot)
+      toast({ title: 'Failed to cancel', description: error.message, variant: 'destructive' })
+    } else {
+      toast({ title: 'Booking cancelled', description: 'The booking was removed.' })
+    }
+  }
+
   return (
     <div className="container py-8">
       <h1 className="text-3xl font-bold mb-8">My Bookings</h1>
@@ -87,7 +101,7 @@ export default function Bookings() {
                   <div className="text-lg font-bold text-primary">${price.toFixed(2)}</div>
                   <div className="space-x-2">
                     <Button variant="outline" size="sm">Reschedule</Button>
-                    <Button variant="destructive" size="sm">Cancel</Button>
+                    <Button variant="destructive" size="sm" onClick={() => handleCancel(booking.id)}>Cancel</Button>
                   </div>
                 </div>
               </CardContent>
