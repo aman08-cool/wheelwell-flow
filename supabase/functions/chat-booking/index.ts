@@ -46,8 +46,8 @@ serve(async (req) => {
   }
 
   try {
-    const openAIApiKey = Deno.env.get("OPENAI_API_KEY");
-    if (!openAIApiKey) {
+    const apiKey = Deno.env.get("OPENAI_API_KEY");
+    if (!apiKey) {
       return new Response(JSON.stringify({ error: "OPENAI_API_KEY is not set" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -62,8 +62,15 @@ serve(async (req) => {
       });
     }
 
+    // Support both OpenAI and OpenRouter keys seamlessly
+    const isOpenRouter = apiKey.startsWith("sk-or-");
+    const endpoint = isOpenRouter
+      ? "https://openrouter.ai/api/v1/chat/completions"
+      : "https://api.openai.com/v1/chat/completions";
+    const model = isOpenRouter ? "openai/gpt-4o-mini" : "gpt-4o-mini";
+
     const payload = {
-      model: "gpt-4o-mini",
+      model,
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         ...messages.map((m: ChatMessage) => ({ role: m.role, content: m.content })),
@@ -72,12 +79,19 @@ serve(async (req) => {
       temperature: 0.2,
     };
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const headers: Record<string, string> = {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    };
+
+    if (isOpenRouter) {
+      headers["HTTP-Referer"] = Deno.env.get("SUPABASE_URL") ?? "http://localhost";
+      headers["X-Title"] = "Booking Assistant";
+    }
+
+    const response = await fetch(endpoint, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${openAIApiKey}`,
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify(payload),
     });
 

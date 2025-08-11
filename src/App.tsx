@@ -36,7 +36,6 @@ function AppRoutes() {
           <Route path="/login" element={<LoginForm />} />
           <Route path="*" element={<Landing />} />
         </Routes>
-        <ChatAssistant />
       </>
     );
   }
