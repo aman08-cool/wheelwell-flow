@@ -67,6 +67,7 @@ export default function BookService() {
   
   const totalPrice = (selectedService?.price || 0) + 
     additionalServicesList.reduce((sum, service) => sum + service.price, 0)
+  const formatINR = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -190,7 +191,7 @@ export default function BookService() {
                           <SelectItem key={service.id} value={service.id.toString()}>
                             <div className="flex items-center justify-between w-full">
                               <span>{service.name}</span>
-                              <span className="ml-2 font-medium">${service.price}</span>
+                              <span className="ml-2 font-medium">{formatINR.format(service.price)}</span>
                             </div>
                           </SelectItem>
                         ))}
@@ -205,7 +206,7 @@ export default function BookService() {
                           <h4 className="font-medium">{selectedService.name}</h4>
                           <p className="text-sm text-muted-foreground">Duration: {selectedService.duration}</p>
                         </div>
-                        <div className="text-lg font-bold text-primary">${selectedService.price}</div>
+                        <div className="text-lg font-bold text-primary">{formatINR.format(selectedService.price)}</div>
                       </div>
                     </div>
                   )}
@@ -229,7 +230,7 @@ export default function BookService() {
                             className="text-sm cursor-pointer flex items-center justify-between flex-1"
                           >
                             <span>{service.name}</span>
-                            <span className="font-medium">${service.price}</span>
+                            <span className="font-medium">{formatINR.format(service.price)}</span>
                           </label>
                         </div>
                       ))}
@@ -436,13 +437,13 @@ export default function BookService() {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span>{selectedService.name}</span>
-                        <span className="font-medium">${selectedService.price}</span>
+                        <span className="font-medium">{formatINR.format(selectedService.price)}</span>
                       </div>
                       
                       {additionalServicesList.map((service) => (
                         <div key={service.id} className="flex items-center justify-between text-sm">
                           <span>{service.name}</span>
-                          <span>${service.price}</span>
+                          <span>{formatINR.format(service.price)}</span>
                         </div>
                       ))}
                       
@@ -450,7 +451,7 @@ export default function BookService() {
                       
                       <div className="flex items-center justify-between font-bold text-lg">
                         <span>Total</span>
-                        <span className="text-primary">${totalPrice.toFixed(2)}</span>
+                        <span className="text-primary">{formatINR.format(totalPrice)}</span>
                       </div>
                     </div>
                   )}
