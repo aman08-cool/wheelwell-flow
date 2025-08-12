@@ -25,6 +25,23 @@ type ChatResponse = {
   intent?: BookingIntent;
 };
 
+const SERVICE_PRICES: Record<string, number> = {
+  "basic oil change": 49.99,
+  "premium oil change": 79.99,
+  "brake pad replacement": 149.99,
+  "tire rotation & balance": 79.99,
+  "engine diagnostics": 99.99,
+  "ac system service": 129.99,
+  "battery test & replace": 159.99,
+  "transmission service": 199.99,
+};
+
+const getPriceForService = (name?: string) => {
+  if (!name) return 0;
+  const key = name.trim().toLowerCase();
+  return SERVICE_PRICES[key] ?? 0;
+};
+
 export default function ChatAssistant() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -90,6 +107,8 @@ export default function ChatAssistant() {
 
       const { service_name, vehicle_make, vehicle_model, vehicle_year, preferred_date, preferred_time, location } = proposed;
 
+      const computedPrice = getPriceForService(service_name);
+
       if (!service_name || !preferred_date || !preferred_time) {
         toast({ title: "Missing details", description: "Service, date and time are required.", variant: "destructive" });
         return;
@@ -99,7 +118,7 @@ export default function ChatAssistant() {
         user_id: user.id,
         service_name,
         additional_services: [],
-        price: 0,
+        price: computedPrice,
         location: location || null,
         status: "confirmed",
         scheduled_date: preferred_date,
