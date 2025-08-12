@@ -107,7 +107,22 @@ export default function ChatAssistant() {
 
       const { service_name, vehicle_make, vehicle_model, vehicle_year, preferred_date, preferred_time, location } = proposed;
 
-      const computedPrice = getPriceForService(service_name);
+      const normalize = (s: string) => s.toLowerCase().trim().replace(/&/g, "and").replace(/\s+/g, " ").replace(/[^a-z0-9 ]/g, "");
+      const normalizedMap = Object.fromEntries(Object.entries(SERVICE_PRICES).map(([k, v]) => [normalize(k), v]));
+      const ALIASES: Record<string, string> = {
+        "oil change": "basic oil change",
+        "standard oil change": "basic oil change",
+        "brake pads replacement": "brake pad replacement",
+        "brake replacement": "brake pad replacement",
+        "brake service": "brake pad replacement",
+        "tire rotation balance": "tire rotation and balance",
+        "tire rotation": "tire rotation and balance",
+        "engine diagnostic": "engine diagnostics",
+        "battery test replace": "battery test & replace",
+      };
+      const norm = normalize(service_name || "");
+      const canonical = ALIASES[norm] ?? norm;
+      const computedPrice = normalizedMap[canonical] ?? 0;
 
       if (!service_name || !preferred_date || !preferred_time) {
         toast({ title: "Missing details", description: "Service, date and time are required.", variant: "destructive" });
