@@ -28,7 +28,7 @@ export default function Bookings() {
   const [activeId, setActiveId] = useState<string | null>(null)
   const [newDate, setNewDate] = useState<string>("")
   const [newTime, setNewTime] = useState<string>("")
-  const formatINR = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' })
+  const formatINR = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 4, maximumFractionDigits: 4 })
 
   useEffect(() => {
     const load = async () => {

@@ -113,7 +113,7 @@ export default function Services() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [sortBy, setSortBy] = useState("name")
-  const formatINR = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' })
+  const formatINR = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 4, maximumFractionDigits: 4 })
 
   const filteredServices = services
     .filter(service => {

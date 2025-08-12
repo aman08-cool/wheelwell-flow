@@ -67,7 +67,7 @@ export default function BookService() {
   
   const totalPrice = (selectedService?.price || 0) + 
     additionalServicesList.reduce((sum, service) => sum + service.price, 0)
-  const formatINR = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' })
+  const formatINR = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 4, maximumFractionDigits: 4 })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
