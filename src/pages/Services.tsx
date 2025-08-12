@@ -113,7 +113,7 @@ export default function Services() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [sortBy, setSortBy] = useState("name")
-  const formatINR = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 4, maximumFractionDigits: 4 })
+  const formatINR = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' })
 
   const filteredServices = services
     .filter(service => {
@@ -209,7 +209,7 @@ export default function Services() {
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="text-2xl font-bold text-primary">
-                    {formatINR.format(service.price)}
+                    {formatINR.format(service.price * 100)}
                   </div>
                   <Badge variant="outline" className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />

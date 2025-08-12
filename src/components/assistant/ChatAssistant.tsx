@@ -133,7 +133,7 @@ export default function ChatAssistant() {
         user_id: user.id,
         service_name,
         additional_services: [],
-        price: computedPrice,
+        price: (computedPrice ?? 0) * 100,
         location: location || null,
         status: "confirmed",
         scheduled_date: preferred_date,

@@ -28,7 +28,7 @@ export default function Bookings() {
   const [activeId, setActiveId] = useState<string | null>(null)
   const [newDate, setNewDate] = useState<string>("")
   const [newTime, setNewTime] = useState<string>("")
-  const formatINR = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 4, maximumFractionDigits: 4 })
+  const formatINR = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' })
 
   useEffect(() => {
     const load = async () => {
@@ -107,6 +107,7 @@ export default function Bookings() {
         {!loading && bookings.map((booking) => {
           const vehicle = [booking.vehicle_year, booking.vehicle_make, booking.vehicle_model].filter(Boolean).join(' ')
           const price = typeof booking.price === 'number' ? booking.price : Number(booking.price || 0)
+          const displayPrice = price < 1000 ? price * 100 : price
           return (
             <Card key={booking.id}>
               <CardHeader>
@@ -132,7 +133,7 @@ export default function Bookings() {
                   </div>
                 </div>
                 <div className="flex items-center justify-between mt-4">
-                  <div className="text-lg font-bold text-primary">{formatINR.format(price)}</div>
+                  <div className="text-lg font-bold text-primary">{formatINR.format(displayPrice)}</div>
                   <div className="space-x-2">
                     <Button variant="outline" size="sm" onClick={() => openReschedule(booking)}>Reschedule</Button>
                     <Button variant="destructive" size="sm" onClick={() => handleCancel(booking.id)}>Cancel</Button>
